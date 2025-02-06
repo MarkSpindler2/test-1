@@ -1,43 +1,242 @@
-<!DOCTYPE html><head>
-    <html>
-        <head>
-
-        
+<!DOCTYPE html>
+<html lang="en">
+  <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Hello World 1.0.0</title>
     <style>
-      * {
-        font-size: 20px;
-        font-family: sans-serif;
+      :root {
+        --light-grey: #ddd;
+        --light-blue: #ccf;
+        --dark-grey: #222;
+        --light-green: #7c8;
+        --light-red: #c76;
       }
-        .world-box{
-            padding: 20px;
-            background-color: #def;
-            border: solid 2px yellow;
-        }
-.world-box:active{
-    background-color: black;
-    color: gold;
-    border: solid 2px gold;
-}
-        .preach{
-            background-color: black;
-            color:#eef;
-        }
-        .image1{
-            width:100px;
-            height: 100px;
-            
-        }
+      .letter {
+        font-size: 50px;
+        width: 50px;
+        height: 80px;
+        margin: 2px;
+        padding: 4px;
+        border-radius: 4px;
+        background-color: var(--light-grey);
+        color: var(--dark-grey);
+      }
+      .all-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .output-box {
+        display: flex;
+        flex-direction: row;
+      }
+      .cursor {
+        border: 2px solid var(--dark-grey);
+      }
+      .correct {
+        background-color: var(--light-green);
+      }
+      .wrong {
+        background-color: var(--light-red);
+      }
     </style>
   </head>
   <body>
-    <div id="world-box" class="world-box">Jesus Christ is Lord and Saviour. His Church is the Catholic Church.</div>
-    <div class="preach">Preach the gospel at all times and when necessary, use words.-- St. Francis of Assisi</div>
-      <img class="image1" alt="st. jean de brebeuf" src="https://cdnarautos.s3.amazonaws.com/sites/2/2021/10/R027-HAG-D-Sao-Joao-de-Brebeuf.jpg" />
-      <div>Image of St. Jean de Brebeuf</div>
-      <script></script>
+    <div id="all-box" class="all-box">
+      This is the language of China.
+      <div class="output-box" id="output-box"></div>
+      <button class="btn-check" id="btn-audio" type="submit">Play Audio</button>
+    </div>
+    <script>
+      let word = "I hope you understand.";
+      let wordObj = {};
+      let cursorPos = 0;
+      document.addEventListener("DOMContentLoaded", function (e) {
+        //0--build word object
+        wordObj = {};
+        for (let i = 0; i < word.length; i++) {
+          //
+          wordObj[i] = word[i];
+        }
+        console.log(wordObj);
+        //1--word loaded to screen
+        for (let i = 0; i < word.length; i++) {
+          //
+          let outputDiv = document.querySelector("#output-box");
+          let letterDiv = document.createElement("div");
+          letterDiv.setAttribute("id", "ltr-" + i);
+          letterDiv.classList.add("letter");
+          outputDiv.appendChild(letterDiv);
+        }
+
+        document.querySelector("#ltr-0").classList.add("cursor");
+        //2--on key press down, letter added and css for correct or false letter added
+        //const regex = /^[a-zA-z0-9"!@#$%^&*()-_+=,./<>?|`\s]/;
+        //ensure it has only the specified characters...
+        const regex = /^[^a-zA-Z0-9,.;:'"!@#$%^&*()-_+=\s]+$/;
+
+        console.log(regex.test("|"));
+        document.addEventListener("keydown", function (e) {
+          //add text to current cursor position
+          //only accept characters from ascii 33 to 127?
+          //If the e.Key is longer than 1, then exit...
+          if (e.key == "Backspace") {
+            document.querySelector("#ltr-" + cursorPos).textContent = "";
+            if (cursorPos > 0) {
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.remove("correct");
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.remove("wrong");
+
+              cursorPos--;
+              let elemList = document.querySelectorAll(".cursor");
+
+              for (let i = 0; i < elemList.length; i++) {
+                //
+                elemList[i].classList.remove("cursor");
+              }
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.add("cursor");
+            } else {
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.remove("correct");
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.remove("wrong");
+            }
+            return;
+          } else if (e.key == "ArrowRight") {
+            //
+
+            if (cursorPos < word.length - 1) {
+              cursorPos++;
+              let elemList = document.querySelectorAll(".cursor");
+
+              for (let i = 0; i < elemList.length; i++) {
+                //
+                elemList[i].classList.remove("cursor");
+              }
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.add("cursor");
+            }
+            return;
+          } else if (e.key == "ArrowLeft") {
+            //
+
+            if (cursorPos > 0) {
+              cursorPos--;
+              let elemList = document.querySelectorAll(".cursor");
+
+              for (let i = 0; i < elemList.length; i++) {
+                //
+                elemList[i].classList.remove("cursor");
+              }
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.add("cursor");
+            }
+            return;
+          } else if (e.key == "CapsLock") {
+            return;
+          } else if (e.key == "Shift") {
+            //
+            return;
+          }
+          if (e.key.length > 1) {
+            //
+            alert("too long");
+            alert(e.key);
+            return;
+          }
+          document.querySelector("#ltr-" + cursorPos).textContent = e.key;
+          //increment cursor (if it is a match, add the correct color or wrong color otherwise)
+          if (cursorPos < word.length - 1) {
+            //check is correct
+
+            console.log(`${e.key} - ${wordObj[cursorPos]}`);
+            if (e.key == wordObj[cursorPos]) {
+              console.log("correct");
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.remove("correct");
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.remove("wrong");
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.add("correct");
+            } else {
+              console.log("wrong");
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.remove("correct");
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.remove("wrong");
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.add("wrong");
+            }
+
+            cursorPos++;
+
+            let elemList = document.querySelectorAll(".cursor");
+
+            for (let i = 0; i < elemList.length; i++) {
+              //
+              elemList[i].classList.remove("cursor");
+            }
+            document.querySelector("#ltr-" + cursorPos).classList.add("cursor");
+          } else {
+            if (e.key == wordObj[cursorPos]) {
+              console.log("correct");
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.remove("correct");
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.remove("wrong");
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.add("correct");
+            } else {
+              console.log("wrong");
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.remove("correct");
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.remove("wrong");
+              document
+                .querySelector("#ltr-" + cursorPos)
+                .classList.add("wrong");
+            }
+          }
+          //remember position of cursor
+          //add letter to cursor position
+          //check if letter matches wordObj and add appropriate CSS
+          //move cursor
+        });
+        document
+          .querySelector("#btn-audio")
+          .addEventListener("click", function (e) {
+            //word
+            const synth = window.speechSynthesis;
+            const utterThis = new SpeechSynthesisUtterance(word);
+
+            synth.speak(utterThis);
+            //change target or focus to cursor....
+            document.querySelector("#btn-audio").blur();
+            document.querySelector(".cursor").focus();
+          });
+
+        //TODO NEXT, allow repositioning of the cursor by mouse click... if there was a click on a letter class (TODO NEXT FEB 6)
+      });
+    </script>
   </body>
-  </html>
+</html>
