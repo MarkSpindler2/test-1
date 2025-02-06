@@ -69,6 +69,7 @@
           letterDiv.classList.add("letter");
           letterDiv.addEventListener("click", function (e) {
             console.log(e.srcElement.id);
+            alert(e.srcElement.id);
             letterDiv.focus();
             letterDiv.prompt();
           });
