@@ -65,8 +65,13 @@
           let outputDiv = document.querySelector("#output-box");
           let letterDiv = document.createElement("div");
           letterDiv.setAttribute("id", "ltr-" + i);
+
           letterDiv.classList.add("letter");
-          
+          letterDiv.addEventListener("click", function (e) {
+            console.log(e.srcElement.id);
+            letterDiv.focus();
+            letterDiv.prompt();
+          });
           outputDiv.appendChild(letterDiv);
         }
 
