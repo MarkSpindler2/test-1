@@ -49,29 +49,22 @@
         someBox.classList.add("success");
       }
 
-      myTextbox.addEventListener("input", checkName, false);
+      myTextbox.addEventListener("textInput", checkName, false);
 
       function checkName(evt) {
         console.log(evt);
-        const inputEl = evt.target;
-        console.log(inputEl);
-        console.log(inputEl.data);
-        const nSelStart = inputEl.selectionStart;
-        // Get last typed character (modify for your own needs)
-        const sLastTyped = inputEl.value.substr(nSelStart - 1, 1);
-        console.log("Last typed character:", sLastTyped);
+        console.log(evt.data);
 
-        //check what key is pressed...
         const lowerCaseAlphabet = "abcdefghijklmnopqrstuvwxyz";
 
-        if (!lowerCaseAlphabet.includes(sLastTyped)) {
+        if (!lowerCaseAlphabet.includes(evt.data)) {
           evt.preventDefault();
 
           displayWarning(
-            `Please use lowercase letters only.\nKey last typed: ${sLastTyped}\n`
+            `Please use lowercase letters only.\nKey last typed: ${evt.data}\n`
           );
         } else {
-          displaySuccess(`Key last typed: ${sLastTyped}\n`);
+          displaySuccess(`Key last typed: ${evt.data}\n`);
         }
       }
     </script>
