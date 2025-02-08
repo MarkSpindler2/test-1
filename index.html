@@ -77,16 +77,17 @@
 
       function checkName(evt) {
         const key = evt.key;
+        const targetVal = e.target.value;
 
         //check what key is pressed...
         const lowerCaseAlphabet = "abcdefghijklmnopqrstuvwxyz";
         if (!lowerCaseAlphabet.includes(key)) {
           evt.preventDefault();
           displayWarning(
-            `Please use lowercase letters only.\nKey pressed: ${key}\n`
+            `Please use lowercase letters only.\nKey pressed: ${key}\ntargetVal: ${targetVal}\n`
           );
         } else {
-          displaySuccess(`Key pressed: ${key}`);
+          displaySuccess(`Key pressed: ${key}, targetVal: ${targetVal}`);
         }
       }
     </script>
