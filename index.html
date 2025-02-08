@@ -2,81 +2,248 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-  </head>
-  <style>
-    .warning {
-      border: 2px solid #f39389;
-      border-radius: 2px;
-      padding: 10px;
-      position: absolute;
-      background-color: #fbd8d4;
-      color: #3b3c40;
-    }
-    .success {
-      border: 2px solid #afa;
-      border-radius: 2px;
-      padding: 10px;
-      position: absolute;
-      background-color: #dfd;
-      color: #3b3c40;
-    }
-  </style>
-  <body>
-    <div class="container">
-      <p>Please enter your name using lowercase letters only.</p>
+    <style>
+      :root {
+        --light-grey: #ddd;
+        --light-blue: #ccf;
+        --dark-grey: #222;
+        --light-green: #7c8;
+        --light-red: #c76;
+      }
+      .letter {
+        font-size: 50px;
 
-      <form>
-        <input type="text" id="my-textbox" autocomplete="off" />
-      </form>
-      <div id="some-box"></div>
+        width: 50px;
+        height: 80px;
+        margin: 2px;
+        padding: 4px;
+        border-radius: 4px;
+        background-color: var(--light-grey);
+        color: var(--dark-grey);
+      }
+      .letter:focus {
+        border: 4px solid gold;
+      }
+      .all-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .output-box {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .correct {
+        background-color: var(--light-green);
+      }
+      .wrong {
+        background-color: var(--light-red);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="all-box" class="all-box">
+      This is the language of China.
+      <div class="output-box" id="output-box"></div>
+      <button class="btn-check" id="btn-audio" type="submit">Play Audio</button>
     </div>
     <script>
-      const myTextbox = document.getElementById("my-textbox");
+      let word = "I hope you understand.";
+      let wordObj = {};
+      let cursorPos = 0;
+      let focusPos = 0;
+      document.addEventListener("DOMContentLoaded", function (e) {
+        //0--build word object
 
-      const someBox = document.querySelector("#some-box");
-
-      function displayWarning(msg) {
-        someBox.innerText = msg;
-        someBox.classList.remove("warning");
-        someBox.classList.remove("success");
-        someBox.classList.add("warning");
-      }
-
-      function displaySuccess(msg) {
-        someBox.innerText = msg;
-        someBox.classList.remove("warning");
-        someBox.classList.remove("success");
-        someBox.classList.add("success");
-      }
-
-      myTextbox.addEventListener("textInput", checkName, false);
-
-      function checkName(evt) {
-        //get current text before adding the letter
-        let beforeText = document.querySelector("#my-textbox").value;
-
-        console.log(evt);
-        console.log(evt.data);
-        console.log(`Event is cancelable: ${evt.cancelable}`);
-
-        const lowerCaseAlphabet = "abcdefghijklmnopqrstuvwxyz";
-
-        if (!lowerCaseAlphabet.includes(evt.data)) {
-          let beforeText2 = document.querySelector("#my-textbox").value;
-
-          evt.preventDefault();
-
-          displayWarning(
-            `Please use lowercase letters only.\nKey last typed: ${evt.data}\nEvent is cancelable: ${evt.cancelable}\n`
-          );
-        } else {
-          let beforeText2 = document.querySelector("#my-textbox").value;
-
-          displaySuccess(
-            `Key last typed: ${evt.data}\nEvent is cancelable: ${evt.cancelable}\n`
-          );
+        //TODO NEXT.. remove all references to "cursor" and only use "focus" - Feb 8 TODO NEXT
+        wordObj = {};
+        for (let i = 0; i < word.length; i++) {
+          //
+          wordObj[i] = word[i];
         }
-      }
+        console.log(wordObj);
+        //1--word loaded to screen
+        for (let i = 0; i < word.length; i++) {
+          //
+          let outputDiv = document.querySelector("#output-box");
+          let letterInp = document.createElement("input");
+          letterInp.setAttribute("id", "ltr-" + i);
+
+          letterInp.classList.add("letter");
+          letterInp.addEventListener("click", function (e) {
+            console.log(e.srcElement.id);
+            //alert(e.srcElement.id);
+            letterInp.focus();
+            //re-position the cursor
+
+            //save the position of the cursor the variable
+            focusPos = String(e.srcElement.id).split("-")[1];
+            console.log(focusPos);
+          });
+          outputDiv.appendChild(letterInp);
+        }
+
+        document.querySelector("#ltr-0").focus();
+        //2--on key press down, letter added and css for correct or false letter added
+        //const regex = /^[a-zA-z0-9"!@#$%^&*()-_+=,./<>?|`\s]/;
+        //ensure it has only the specified characters...
+        const regex = /^[^a-zA-Z0-9,.;:'"!@#$%^&*()-_+=\s]+$/;
+
+        document.addEventListener("keydown", function (e) {
+          //add text to current cursor position
+          //only accept characters from ascii 33 to 127?
+          //If the e.Key is longer than 1, then exit...
+          let activeEl = document.activeElement;
+          console.log(activeEl);
+
+          let focusPos = String(activeEl.id).split("-")[1];
+          console.log(e.key);
+          if (e.key == "Backspace") {
+            document.querySelector("#ltr-" + focusPos).value = "";
+
+            console.log(
+              "test: " + document.querySelector("#ltr-" + focusPos).value
+            );
+            if (focusPos > 0) {
+              document
+                .querySelector("#ltr-" + focusPos)
+                .classList.remove("correct");
+              document
+                .querySelector("#ltr-" + focusPos)
+                .classList.remove("wrong");
+
+              //now set the focus position back - TODO NEXT  - refactor
+              focusPos--;
+              document.querySelector("#ltr-" + focusPos).focus();
+
+              //focus on new input
+              document.querySelector("#ltr-" + focusPos).focus();
+            } else {
+              document
+                .querySelector("#ltr-" + focusPos)
+                .classList.remove("correct");
+              document
+                .querySelector("#ltr-" + focusPos)
+                .classList.remove("wrong");
+            }
+            return;
+          } else if (e.key == "ArrowRight") {
+            //
+
+            if (focusPos < word.length - 1) {
+              document.querySelector("#ltr-" + focusPos).blur();
+              focusPos++;
+              //
+              document.querySelector("#ltr-" + focusPos).focus();
+
+              return;
+            }
+          } else if (e.key == "ArrowLeft") {
+            //
+
+            if (focusPos > 0) {
+              focusPos--;
+              document.querySelector("#ltr-" + focusPos).focus();
+              return;
+            }
+          } else if (e.key == "CapsLock") {
+            return;
+          } else if (e.key == "Shift") {
+            //
+            return;
+          }
+          if (e.key.length > 1) {
+            //
+            alert("too long");
+            alert(e.key);
+            return;
+          }
+
+          //REFACTOR TO USE FOCUS, NOT CURSORPOSITION.. REMOVE CURSOR POSITION... GET FOCUS... IF IT IS A LETTER PRESS
+          //IF ANY LETTER IS FOCUSED...TODO NEXT FEB7, DON'T MOVE THE CURSOR
+          console.log(`line 148: focusPos: ${focusPos}`);
+          //document.querySelector("#ltr-" + cursorPos).textContent = e.key;
+          let actElem = document.activeElement;
+          console.log(actElem.id);
+
+          //increment cursor (if it is a match, add the correct color or wrong color otherwise)
+          if (focusPos < word.length - 1) {
+            //check is correct
+
+            console.log(`${e.key} - ${wordObj[focusPos]}`);
+            if (e.key == wordObj[focusPos]) {
+              console.log("correct");
+              document
+                .querySelector("#ltr-" + focusPos)
+                .classList.remove("correct");
+              document
+                .querySelector("#ltr-" + focusPos)
+                .classList.remove("wrong");
+              document
+                .querySelector("#ltr-" + focusPos)
+                .classList.add("correct");
+            } else {
+              console.log("wrong");
+              document
+                .querySelector("#ltr-" + focusPos)
+                .classList.remove("correct");
+              document
+                .querySelector("#ltr-" + focusPos)
+                .classList.remove("wrong");
+              document.querySelector("#ltr-" + focusPos).classList.add("wrong");
+            }
+            document.querySelector("#ltr-" + focusPos).value = e.key;
+            e.preventDefault();
+
+            focusPos++;
+            //LINE 194 --
+            document.querySelector("#ltr-" + focusPos).focus();
+          } else {
+            if (e.key == wordObj[focusPos]) {
+              console.log("correct");
+              document
+                .querySelector("#ltr-" + focusPos)
+                .classList.remove("correct");
+              document
+                .querySelector("#ltr-" + focusPos)
+                .classList.remove("wrong");
+              document
+                .querySelector("#ltr-" + focusPos)
+                .classList.add("correct");
+            } else {
+              console.log("wrong");
+              document
+                .querySelector("#ltr-" + focusPos)
+                .classList.remove("correct");
+              document
+                .querySelector("#ltr-" + focusPos)
+                .classList.remove("wrong");
+              document.querySelector("#ltr-" + focusPos).classList.add("wrong");
+            }
+          }
+          //remember position of cursor
+          //add letter to cursor position
+          //check if letter matches wordObj and add appropriate CSS
+          //move cursor
+        });
+        document
+          .querySelector("#btn-audio")
+          .addEventListener("click", function (e) {
+            //word
+            const synth = window.speechSynthesis;
+            const utterThis = new SpeechSynthesisUtterance(word);
+
+            synth.speak(utterThis);
+            //change target or focus to cursor....
+            document.querySelector("#btn-audio").blur();
+            document.querySelector("#ltr-" + focusPos).focus();
+          });
+
+        //TODO NEXT, allow repositioning of the cursor by mouse click... if there was a click on a letter class (TODO NEXT FEB 6)
+      });
     </script>
   </body>
 </html>
