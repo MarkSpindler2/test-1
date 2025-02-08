@@ -2,249 +2,93 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <style>
-      :root {
-        --light-grey: #ddd;
-        --light-blue: #ccf;
-        --dark-grey: #222;
-        --light-green: #7c8;
-        --light-red: #c76;
-      }
-      .letter {
-        font-size: 50px;
-        width: 50px;
-        height: 80px;
-        margin: 2px;
-        padding: 4px;
-        border-radius: 4px;
-        background-color: var(--light-grey);
-        color: var(--dark-grey);
-      }
-      .all-box {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
-      .output-box {
-        display: flex;
-        flex-direction: row;
-      }
-      .cursor {
-        border: 2px solid var(--dark-grey);
-      }
-      .correct {
-        background-color: var(--light-green);
-      }
-      .wrong {
-        background-color: var(--light-red);
-      }
-    </style>
   </head>
+  <style>
+    .warning {
+      border: 2px solid #f39389;
+      border-radius: 2px;
+      padding: 10px;
+      position: absolute;
+      background-color: #fbd8d4;
+      color: #3b3c40;
+    }
+    .success {
+      border: 2px solid #afa;
+      border-radius: 2px;
+      padding: 10px;
+      position: absolute;
+      background-color: #dfd;
+      color: #3b3c40;
+    }
+  </style>
   <body>
-    <div id="all-box" class="all-box">
-      This is the language of China.
-      <div class="output-box" id="output-box"></div>
-      <button class="btn-check" id="btn-audio" type="submit">Play Audio</button>
+    <div class="container">
+      <p>Please enter your name using lowercase letters only.</p>
+
+      <form>
+        <input type="text" id="my-textbox" autocomplete="off" />
+      </form>
     </div>
     <script>
-      let word = "I hope you understand.";
-      let wordObj = {};
-      let cursorPos = 0;
-      document.addEventListener("DOMContentLoaded", function (e) {
-        //0--build word object
-        wordObj = {};
-        for (let i = 0; i < word.length; i++) {
-          //
-          wordObj[i] = word[i];
-        }
-        console.log(wordObj);
-        //1--word loaded to screen
-        for (let i = 0; i < word.length; i++) {
-          //
-          let outputDiv = document.querySelector("#output-box");
-          let letterDiv = document.createElement("div");
-          letterDiv.setAttribute("id", "ltr-" + i);
+      const myTextbox = document.getElementById("my-textbox");
 
-          letterDiv.classList.add("letter");
-          letterDiv.addEventListener("click", function (e) {
-            console.log(e.srcElement.id);
-            alert(e.srcElement.id);
-            letterDiv.focus();
-            
-          });
-          outputDiv.appendChild(letterDiv);
+      let warningTimeout;
+      const someBox = document.createElement("div");
+
+      function displayWarning(msg) {
+        someBox.innerText = msg;
+        someBox.classList.remove("warning");
+        someBox.classList.remove("success");
+        someBox.classList.add("warning");
+
+        if (document.body.contains(someBox)) {
+          clearTimeout(warningTimeout);
+        } else {
+          // insert someBox after myTextbox
+          myTextbox.parentNode.insertBefore(someBox, myTextbox.nextSibling);
         }
 
-        document.querySelector("#ltr-0").classList.add("cursor");
-        document.querySelector("#ltr-0").focus();
-        //2--on key press down, letter added and css for correct or false letter added
-        //const regex = /^[a-zA-z0-9"!@#$%^&*()-_+=,./<>?|`\s]/;
-        //ensure it has only the specified characters...
-        const regex = /^[^a-zA-Z0-9,.;:'"!@#$%^&*()-_+=\s]+$/;
+        warningTimeout = setTimeout(() => {
+          someBox.parentNode.removeChild(someBox);
+          warningTimeout = -1;
+        }, 2000);
+      }
 
-        console.log(regex.test("|"));
-        document.addEventListener("keydown", function (e) {
-          //add text to current cursor position
-          //only accept characters from ascii 33 to 127?
-          //If the e.Key is longer than 1, then exit...
-          if (e.key == "Backspace") {
-            document.querySelector("#ltr-" + cursorPos).textContent = "";
-            if (cursorPos > 0) {
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.remove("correct");
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.remove("wrong");
+      function displaySuccess(msg) {
+        someBox.innerText = msg;
+        someBox.classList.remove("warning");
+        someBox.classList.remove("success");
+        someBox.classList.add("success");
 
-              cursorPos--;
-              let elemList = document.querySelectorAll(".cursor");
+        if (document.body.contains(someBox)) {
+          clearTimeout(successTimeout);
+        } else {
+          // insert someBox after myTextbox
+          myTextbox.parentNode.insertBefore(someBox, myTextbox.nextSibling);
+        }
 
-              for (let i = 0; i < elemList.length; i++) {
-                //
-                elemList[i].classList.remove("cursor");
-              }
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.add("cursor");
-            } else {
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.remove("correct");
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.remove("wrong");
-            }
-            return;
-          } else if (e.key == "ArrowRight") {
-            //
+        successTimeout = setTimeout(() => {
+          someBox.parentNode.removeChild(someBox);
+          successTimeout = -1;
+        }, 2000);
+      }
 
-            if (cursorPos < word.length - 1) {
-              cursorPos++;
-              let elemList = document.querySelectorAll(".cursor");
+      myTextbox.addEventListener("keydown", checkName, false);
 
-              for (let i = 0; i < elemList.length; i++) {
-                //
-                elemList[i].classList.remove("cursor");
-              }
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.add("cursor");
-            }
-            return;
-          } else if (e.key == "ArrowLeft") {
-            //
+      function checkName(evt) {
+        const key = evt.key;
 
-            if (cursorPos > 0) {
-              cursorPos--;
-              let elemList = document.querySelectorAll(".cursor");
-
-              for (let i = 0; i < elemList.length; i++) {
-                //
-                elemList[i].classList.remove("cursor");
-              }
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.add("cursor");
-            }
-            return;
-          } else if (e.key == "CapsLock") {
-            return;
-          } else if (e.key == "Shift") {
-            //
-            return;
-          }
-          if (e.key.length > 1) {
-            //
-            alert("too long");
-            alert(e.key);
-            return;
-          }
-          document.querySelector("#ltr-" + cursorPos).textContent = e.key;
-          //increment cursor (if it is a match, add the correct color or wrong color otherwise)
-          if (cursorPos < word.length - 1) {
-            //check is correct
-
-            console.log(`${e.key} - ${wordObj[cursorPos]}`);
-            if (e.key == wordObj[cursorPos]) {
-              console.log("correct");
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.remove("correct");
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.remove("wrong");
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.add("correct");
-            } else {
-              console.log("wrong");
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.remove("correct");
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.remove("wrong");
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.add("wrong");
-            }
-
-            cursorPos++;
-
-            let elemList = document.querySelectorAll(".cursor");
-
-            for (let i = 0; i < elemList.length; i++) {
-              //
-              elemList[i].classList.remove("cursor");
-            }
-            document.querySelector("#ltr-" + cursorPos).classList.add("cursor");
-          } else {
-            if (e.key == wordObj[cursorPos]) {
-              console.log("correct");
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.remove("correct");
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.remove("wrong");
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.add("correct");
-            } else {
-              console.log("wrong");
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.remove("correct");
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.remove("wrong");
-              document
-                .querySelector("#ltr-" + cursorPos)
-                .classList.add("wrong");
-            }
-          }
-          //remember position of cursor
-          //add letter to cursor position
-          //check if letter matches wordObj and add appropriate CSS
-          //move cursor
-        });
-        document
-          .querySelector("#btn-audio")
-          .addEventListener("click", function (e) {
-            //word
-            const synth = window.speechSynthesis;
-            const utterThis = new SpeechSynthesisUtterance(word);
-
-            synth.speak(utterThis);
-            //change target or focus to cursor....
-            document.querySelector("#btn-audio").blur();
-            document.querySelector(".cursor").focus();
-          });
-
-        //TODO NEXT, allow repositioning of the cursor by mouse click... if there was a click on a letter class (TODO NEXT FEB 6)
-      });
+        //check what key is pressed...
+        const lowerCaseAlphabet = "abcdefghijklmnopqrstuvwxyz";
+        if (!lowerCaseAlphabet.includes(key)) {
+          evt.preventDefault();
+          displayWarning(
+            `Please use lowercase letters only.\nKey pressed: ${key}\n`
+          );
+        } else {
+          displaySuccess(`Key pressed: ${key}`);
+        }
+      }
     </script>
   </body>
 </html>
