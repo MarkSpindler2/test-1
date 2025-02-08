@@ -28,30 +28,18 @@
       <form>
         <input type="text" id="my-textbox" autocomplete="off" />
       </form>
+      <div id="some-box"></div>
     </div>
     <script>
       const myTextbox = document.getElementById("my-textbox");
 
-      let warningTimeout;
-      const someBox = document.createElement("div");
+      const someBox = document.querySelector("#some-box");
 
       function displayWarning(msg) {
         someBox.innerText = msg;
         someBox.classList.remove("warning");
         someBox.classList.remove("success");
         someBox.classList.add("warning");
-
-        if (document.body.contains(someBox)) {
-          clearTimeout(warningTimeout);
-        } else {
-          // insert someBox after myTextbox
-          myTextbox.parentNode.insertBefore(someBox, myTextbox.nextSibling);
-        }
-
-        warningTimeout = setTimeout(() => {
-          someBox.parentNode.removeChild(someBox);
-          warningTimeout = -1;
-        }, 2000);
       }
 
       function displaySuccess(msg) {
@@ -59,35 +47,31 @@
         someBox.classList.remove("warning");
         someBox.classList.remove("success");
         someBox.classList.add("success");
-
-        if (document.body.contains(someBox)) {
-          clearTimeout(successTimeout);
-        } else {
-          // insert someBox after myTextbox
-          myTextbox.parentNode.insertBefore(someBox, myTextbox.nextSibling);
-        }
-
-        successTimeout = setTimeout(() => {
-          someBox.parentNode.removeChild(someBox);
-          successTimeout = -1;
-        }, 2000);
       }
 
-      myTextbox.addEventListener("keydown", checkName, false);
+      myTextbox.addEventListener("input", checkName, false);
 
       function checkName(evt) {
-        const key = evt.key;
-        const targetVal = e.target.value;
+        console.log(evt);
+        const inputEl = evt.target;
+        console.log(inputEl);
+        console.log(inputEl.data);
+        const nSelStart = inputEl.selectionStart;
+        // Get last typed character (modify for your own needs)
+        const sLastTyped = inputEl.value.substr(nSelStart - 1, 1);
+        console.log("Last typed character:", sLastTyped);
 
         //check what key is pressed...
         const lowerCaseAlphabet = "abcdefghijklmnopqrstuvwxyz";
-        if (!lowerCaseAlphabet.includes(key)) {
+
+        if (!lowerCaseAlphabet.includes(sLastTyped)) {
           evt.preventDefault();
+
           displayWarning(
-            `Please use lowercase letters only.\nKey pressed: ${key}\ntargetVal: ${targetVal}\n`
+            `Please use lowercase letters only.\nKey last typed: ${sLastTyped}\n`
           );
         } else {
-          displaySuccess(`Key pressed: ${key}, targetVal: ${targetVal}`);
+          displaySuccess(`Key last typed: ${sLastTyped}\n`);
         }
       }
     </script>
