@@ -52,19 +52,29 @@
       myTextbox.addEventListener("textInput", checkName, false);
 
       function checkName(evt) {
+        //get current text before adding the letter
+        let beforeText = document.querySelector("#my-textbox").value;
+        console.log("Before: " + beforeText);
         console.log(evt);
         console.log(evt.data);
+        console.log(`Event is cancelable: ${evt.cancelable}`);
 
         const lowerCaseAlphabet = "abcdefghijklmnopqrstuvwxyz";
 
         if (!lowerCaseAlphabet.includes(evt.data)) {
+          let beforeText2 = document.querySelector("#my-textbox").value;
+          console.log("Before 2: " + beforeText2);
           evt.preventDefault();
 
           displayWarning(
-            `Please use lowercase letters only.\nKey last typed: ${evt.data}\n`
+            `Please use lowercase letters only.\nKey last typed: ${evt.data}\nEvent is cancelable: ${evt.cancelable}\n`
           );
         } else {
-          displaySuccess(`Key last typed: ${evt.data}\n`);
+          let beforeText2 = document.querySelector("#my-textbox").value;
+          console.log("Before 2: " + beforeText2);
+          displaySuccess(
+            `Key last typed: ${evt.data}\nEvent is cancelable: ${evt.cancelable}\n`
+          );
         }
       }
     </script>
