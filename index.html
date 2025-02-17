@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Typing 8</title>
+    <title>Typing 9</title>
     <style>
       :root {
         --light-grey: #ddd;
@@ -142,21 +142,14 @@
             //check if last character entered, at current position, is the same as the letter at position in target phrase
             //1--get letter.
             console.log(`e.data: ${e.data}`);
-            alert(`data: ${e.data}`);
-          });
-        //detect a backspace or other key
-        document
-          .querySelector("#inp-1")
-          .addEventListener("keydown", function (e) {
-            alert(`key: ${e.key},  code: ${e.code} `);
-            console.log(`e.key: ${e.key}`);
-            console.log("start: " + this.selectionStart);
-            console.log("end: " + this.selectionEnd);
 
-            //TODO NEXT... continue developing for android.. if e.key = 229 or e.key == 0, (how many keys have this code?.. for backspace.... RESEARCH)
-            //1--check at selection start if key entered is the same
+            //
+
+            //
+
             let index = this.selectionStart;
             let indexEnd = this.selectionEnd;
+
             if (index > indexEnd) {
               let tmpNum = index;
               index = indexEnd;
@@ -177,17 +170,73 @@
               isTooLongIndex = true;
             }
 
-            //add letter to index... if it is a recognized character
+            //
+            if (isTooLongIndex) {
+              e.preventDefault();
+              updateOutput("inp-1", "output-box", val);
+              console.log("exiting");
+              return;
+            }
+            if (iDiff > 0) {
+              val = val.slice(0, index) + val.slice(indexEnd, val.length);
+              console.log(val);
+            }
+            //if val == length of wordObj, do not allow new val to be created...
 
-            //mAKE VALUE TO ADD - get------------------------
+            let newVal =
+              val.slice(0, index) + e.data + val.slice(index, val.length);
+            console.log(newVal);
+            if (newVal.length > Object.keys(wordObj).length) {
+              e.preventDefault();
+              return;
+            }
+            updateOutput("inp-1", "output-box", newVal);
 
-            //IF iDiff is greater than 0, slice val
+            if (index + 1 <= Object.keys(wordObj).length) {
+              if (index + 1 == Object.keys(wordObj).length) {
+                //cursor does not change
+              } else {
+                // you can change the cursor
+                removeAllCursor("output-box");
+                let newLtrId = "ltr-" + String(index + 1);
+                document.querySelector("#" + newLtrId).classList.add("cursor");
+              }
+            } else {
+              //preventDefault... adding text to input? or clear input...
+              e.preventDefault();
+              alert("prevent default");
+              alert(
+                `index: ${index} wordObj.length ${Object.keys(wordObj).length}`
+              );
+            }
+          });
+        //detect a backspace or other key
+        document
+          .querySelector("#inp-1")
+          .addEventListener("keydown", function (e) {
+            //alert(`key: ${e.key},  code: ${e.code} `);
+            console.log(`e.key: ${e.key}`);
+            console.log("start: " + this.selectionStart);
+            console.log("end: " + this.selectionEnd);
 
+            let val = document.querySelector("#inp-1").value;
+
+            //TODO NEXT... continue developing for android.. if e.key = 229 or e.key == 0, (how many keys have this code?.. for backspace.... RESEARCH)
+            //1--check at selection start if key entered is the same
             if (String(e.key).length > 1) {
               //if e.key is longer than 1 length, do not update value... exit
               //if it is a backspace, refresh cursor and output, remove a letter at cursor
               if (e.key == "Backspace") {
                 let newVal = "";
+                let index = this.selectionStart;
+                let indexEnd = this.selectionEnd;
+
+                if (index > indexEnd) {
+                  let tmpNum = index;
+                  index = indexEnd;
+                  indexEnd = tmpNum;
+                }
+                let iDiff = Math.abs(index - indexEnd);
 
                 if (val.length > 0) {
                   if (indexEnd == val.length && iDiff == 0) {
@@ -286,44 +335,6 @@
                 document.querySelector("#" + ltrId).classList.add("cursor");
               }
               return;
-            }
-            if (isTooLongIndex) {
-              e.preventDefault();
-              updateOutput("inp-1", "output-box", val);
-              console.log("exiting");
-              return;
-            }
-            if (iDiff > 0) {
-              val = val.slice(0, index) + val.slice(indexEnd, val.length);
-              console.log(val);
-            }
-            //if val == length of wordObj, do not allow new val to be created...
-
-            let newVal =
-              val.slice(0, index) + e.key + val.slice(index, val.length);
-            console.log(newVal);
-            if (newVal.length > Object.keys(wordObj).length) {
-              e.preventDefault();
-              return;
-            }
-            updateOutput("inp-1", "output-box", newVal);
-
-            if (index + 1 <= Object.keys(wordObj).length) {
-              if (index + 1 == Object.keys(wordObj).length) {
-                //cursor does not change
-              } else {
-                // you can change the cursor
-                removeAllCursor("output-box");
-                let newLtrId = "ltr-" + String(index + 1);
-                document.querySelector("#" + newLtrId).classList.add("cursor");
-              }
-            } else {
-              //preventDefault... adding text to input? or clear input...
-              e.preventDefault();
-              alert("prevent default");
-              alert(
-                `index: ${index} wordObj.length ${Object.keys(wordObj).length}`
-              );
             }
           });
         document
