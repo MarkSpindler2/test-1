@@ -21,7 +21,7 @@
 
       @media (max-width: 600px) {
         body {
-          font-size: 50px;
+          font-size: 30px;
           background-color: blue;
           color: white;
         }
@@ -41,12 +41,12 @@
         }
       }
       .letter {
-        font-size: 50px;
+        font-size: 30px;
 
-        width: 50px;
-        height: 80px;
+        min-width: 20px;
+        min-height: 40px;
         margin: 2px;
-        padding: 4px;
+        padding: 8px;
         border-radius: 4px;
         background-color: var(--light-grey);
         color: var(--dark-grey);
@@ -70,19 +70,6 @@
         margin-top: 20px;
         margin-bottom: 20px;
       }
-      /*
-      .inp {
-        width: 50%;
-        height: 70px;
-        font-size: 40px;
-      }
-
-      .btn {
-        width: 50%;
-        height: 70px;
-        font-size: 40px;
-      }
-        */
 
       .correct {
         background-color: var(--light-green);
@@ -108,7 +95,6 @@
       document.addEventListener("DOMContentLoaded", function (e) {
         //console.log(window.matchMedia("(max-width: 600px)"));
         //0--build word object
-        alert("opened");
 
         wordObj = {};
         for (let i = 0; i < word.length; i++) {
