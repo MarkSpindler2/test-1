@@ -174,6 +174,8 @@
             if (isTooLongIndex) {
               e.preventDefault();
               updateOutput("inp-1", "output-box", val);
+              removeRightAndWrong("output-box");
+              addRightAndWrong(val, "output-box", wordObj);
               console.log("exiting");
               return;
             }
@@ -191,6 +193,8 @@
               return;
             }
             updateOutput("inp-1", "output-box", newVal);
+            removeRightAndWrong("output-box");
+            addRightAndWrong(val, "output-box", wordObj);
 
             if (index + 1 <= Object.keys(wordObj).length) {
               if (index + 1 == Object.keys(wordObj).length) {
@@ -262,6 +266,8 @@
                   }
 
                   updateOutput("inp-1", "output-box", newVal);
+                  removeRightAndWrong("output-box");
+                  addRightAndWrong(val, "output-box", wordObj);
 
                   if (this.selectionStart >= word.length) {
                     ltrId = "ltr-" + Number(this.selectionStart - 1);
@@ -386,8 +392,44 @@
         return;
       }
 
+      function removeRightAndWrong(outputBoxId) {
+        //
+        let letterElems = document
+          .querySelector("#" + outputBoxId)
+          .querySelectorAll(".letter");
+
+        for (let i = 0; i < letterElems.length; i++) {
+          //
+
+          letterElems[i].classList.remove("wrong");
+          letterElems[i].classList.remove("correct");
+        }
+        return;
+      }
+
+      function addRightAndWrong(val, outputBoxId, wordObj) {
+        //
+        let letterElems = document
+          .querySelector("#" + outputBoxId)
+          .querySelectorAll(".letter");
+
+        for (let i = 0; i < letterElems.length; i++) {
+          //***Once the length is past the val length, stop
+          if (i > val.length) {
+            //return early if longer than text in inputbox.
+            return;
+          }
+          if (letterElems[i].textContent == wordObj[i]) {
+            letterElems[i].classList.add("correct");
+          } else {
+            letterElems[i].classList.add("wrong");
+          }
+        }
+        return;
+      }
+
       //1-- add and remove right and wrong to output-box
-      //2-- make code useable for cellphone
+      //2-- make code useable for cellphone - DONE
       //3-- have multiple questions...
     </script>
   </body>
