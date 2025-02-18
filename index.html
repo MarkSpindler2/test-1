@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Typing 9</title>
+    <title>Typing 12</title>
     <style>
       :root {
         --light-grey: #ddd;
@@ -12,7 +12,6 @@
         --dark-grey: #222;
         --light-green: #7c8;
         --light-red: #c76;
-        font-size: 30px;
       }
       .cursor {
         border: solid 4px blue;
@@ -21,19 +20,21 @@
 
       @media (max-width: 600px) {
         body {
-          font-size: 30px;
           background-color: blue;
           color: white;
         }
         .inp {
-          width: 50%;
-          height: 70px;
-          font-size: 40px;
+          min-width: 400px;
+          padding: 10px;
+          margin: 5px auto;
+          font-size: 18px;
         }
         .btn {
-          width: 50%;
-          height: 70px;
-          font-size: 40px;
+          min-width: 90%;
+          padding: 10px;
+          margin: 5px;
+          font-size: 18px;
+          border-radius: 10px;
         }
         .cursor {
           border: solid 4px orange;
@@ -41,12 +42,12 @@
         }
       }
       .letter {
-        font-size: 30px;
+        font-size: 18px;
 
-        min-width: 20px;
-        min-height: 40px;
+        min-width: 10px;
+        min-height: 20px;
         margin: 2px;
-        padding: 8px;
+        padding: 5px;
         border-radius: 4px;
         background-color: var(--light-grey);
         color: var(--dark-grey);
@@ -63,12 +64,41 @@
         justify-content: center;
         align-items: center;
       }
+      .main-0 {
+        width: 100%;
+        height: 100%;
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .slides-1 {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
       .output-box {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        margin-top: 20px;
-        margin-bottom: 20px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+      .inp {
+        min-width: 600px;
+        margin: 5px auto;
+        padding: 2px;
+        border-radius: 5px;
+      }
+      .inp:focus {
+        border: solid 3px gold;
+        outline: solid 2px #750;
+      }
+      select {
+        padding: 2px;
+        margin: 2px;
       }
 
       .correct {
@@ -77,50 +107,73 @@
       .wrong {
         background-color: var(--light-red);
       }
+      .hide {
+        display: none;
+      }
     </style>
   </head>
   <body>
     <div id="all-box" class="all-box">
-      Hint: Do you understand?
-      <div class="output-box" id="output-box"></div>
-      <input type="text" id="inp-1" class="inp" />
-      <button class="btn" id="btn-audio" type="submit">Play Audio</button>
+      <!--IN GOLANG... or all HTML.. yes-->
+      <div id="main-0" class="main-0">
+        Main menu
+        <select id="select-0"></select>
+        <button id="btn-start" class="btn" type="submit">Start</button>
+      </div>
+      <div id="slides-1" class="slides-1 hide">
+        Slides, Hint: Click the audio button and listen.
+        <div class="output-box" id="output-box"></div>
+        <input type="text" id="inp-1" class="inp" />
+        <button class="btn" id="btn-audio" type="submit">Play Audio</button>
+        <button class="btn hide" id="btn-next" type="submit">Next</button>
+        <button class="btn hide" id="btn-done" type="submit">Done</button>
+      </div>
     </div>
     <script>
-      //BIG REFACTOR.. have one input at the bottom and the rest are divs that respond to input on inp-1
-      let word = "I hope you understand.";
+      const sentenceSetsObj = {
+        1: {
+          0: "a",
+          1: "b",
+          2: "c",
+        },
+        2: {
+          0: "hello",
+          1: "bye",
+          2: "congrats",
+        },
+        3: {
+          0: "These are long sentences.",
+          1: "Are you able to see all the letters?",
+          2: "Can you see the keyboard at the same time?",
+        },
+      };
+      let slidesObj = {
+        0: "a",
+        1: "b",
+        2: "c",
+      };
+      let currSlide = 0;
+      let word = "";
       let wordObj = {};
-      let cursorPos = 0;
-      let focusPos = 0;
+      let correctObj = { correct: false };
+
       document.addEventListener("DOMContentLoaded", function (e) {
-        //console.log(window.matchMedia("(max-width: 600px)"));
         //0--build word object
+        //REFACTOR... onload, call the load slide function....
 
-        wordObj = {};
-        for (let i = 0; i < word.length; i++) {
+        //ON LOADED, fill select with keys for sentenceSetsObj
+        let setKeys = Object.keys(sentenceSetsObj);
+        let selectElem = document.querySelector("#select-0");
+        for (let i = 0; i < setKeys.length; i++) {
           //
-          wordObj[i] = word[i];
-        }
-        console.log(wordObj);
-        //1--word loaded to screen
-        for (let i = 0; i < word.length; i++) {
-          //
-          let outputDiv = document.querySelector("#output-box");
-          let letterDiv = document.createElement("div");
-          letterDiv.setAttribute("id", "ltr-" + i);
-
-          letterDiv.classList.add("letter");
-          //
-
-          outputDiv.appendChild(letterDiv);
+          let opt = document.createElement("option");
+          opt.setAttribute("id", "opt-0_" + (i + 1));
+          opt.value = i + 1;
+          opt.text = "Activity: " + (i + 1);
+          selectElem.add(opt);
         }
 
-        document.querySelector("#ltr-0").classList.add("cursor");
-        document.querySelector("#inp-1").focus();
-        //2--on key press down, letter added and css for correct or false letter added
-        //const regex = /^[a-zA-z0-9"!@#$%^&*()-_+=,./<>?|`\s]/;
-        //ensure it has only the specified characters...
-        const regex = /^[^a-zA-Z0-9,.;:'"!@#$%^&*()-_+=\s]+$/;
+        //
 
         document
           .querySelector("#inp-1")
@@ -182,6 +235,7 @@
             updateOutput("inp-1", "output-box", newVal);
             removeRightAndWrong("output-box");
             addRightAndWrong(val, "output-box", wordObj);
+            checkSentenceCorrect(correctObj, "output-box");
 
             if (index + 1 <= Object.keys(wordObj).length) {
               if (index + 1 == Object.keys(wordObj).length) {
@@ -191,6 +245,11 @@
                 removeAllCursor("output-box");
                 let newLtrId = "ltr-" + String(index + 1);
                 document.querySelector("#" + newLtrId).classList.add("cursor");
+              }
+
+              //IF CORRECT, show the next button and an alert or colour change to background..
+              if (correctObj.correct) {
+                document.querySelector("#btn-next").classList.remove("hide");
               }
             } else {
               //preventDefault... adding text to input? or clear input...
@@ -212,8 +271,7 @@
 
             let val = document.querySelector("#inp-1").value;
 
-            //TODO NEXT... continue developing for android.. if e.key = 229 or e.key == 0, (how many keys have this code?.. for backspace.... RESEARCH)
-            //1--check at selection start if key entered is the same
+            //DONE - responds to android e.key and e.data
             if (String(e.key).length > 1) {
               //if e.key is longer than 1 length, do not update value... exit
               //if it is a backspace, refresh cursor and output, remove a letter at cursor
@@ -291,7 +349,6 @@
                   newLtrId = "ltr-" + String(index - 1);
                 }
 
-                //TODO NEXT -- add this new function anywhere there is a remove cursor
                 removeAllCursor("output-box");
 
                 document.querySelector("#" + newLtrId).classList.add("cursor");
@@ -330,6 +387,42 @@
               return;
             }
           });
+
+        //start button - BUTTONS
+        document
+          .querySelector("#btn-start")
+          .addEventListener("click", function (e) {
+            //
+
+            //1--hide main menu
+            document.querySelector("#main-0").classList.remove("hide");
+            document.querySelector("#main-0").classList.add("hide");
+            //2--show slides
+            document.querySelector("#slides-1").classList.remove("hide");
+            //load correct word from setences
+            let choice = document.querySelector("#select-0").value;
+
+            slidesObj = {};
+            slidesObj = sentenceSetsObj[choice];
+
+            //3-- load correct slide
+            wordObj = {};
+            word = slidesObj[currSlide];
+            for (let i = 0; i < word.length; i++) {
+              //
+              wordObj[i] = word[i];
+            }
+            console.log(wordObj);
+            //1--word loaded to screen
+            loadSlide(currSlide, word);
+
+            document.querySelector("#ltr-0").classList.add("cursor");
+            document.querySelector("#inp-1").focus();
+            //2--on key press down, letter added and css for correct or false letter added
+            //const regex = /^[a-zA-z0-9"!@#$%^&*()-_+=,./<>?|`\s]/;
+            //ensure it has only the specified characters...
+            const regex = /^[^a-zA-Z0-9,.;:'"!@#$%^&*()-_+=\s]+$/;
+          });
         document
           .querySelector("#btn-audio")
           .addEventListener("click", function (e) {
@@ -340,7 +433,67 @@
             synth.speak(utterThis);
             //change target or focus to cursor....
             document.querySelector("#btn-audio").blur();
-            document.querySelector("#ltr-" + focusPos).focus();
+            document.querySelector("#inp-1").focus();
+          });
+
+        document
+          .querySelector("#btn-next")
+          .addEventListener("click", function (e) {
+            //
+            //refresh all elements.. augment or increment the currSlide value, if
+            //it is the max number of slides or pages..
+            //1-- increment currSlide counter
+            let slideKeys = Object.keys(slidesObj);
+            if (currSlide < slideKeys.length - 1) {
+              //
+              currSlide++;
+            } else {
+              //hide the next button and show the done button
+              document.querySelector("#btn-next").classList.remove("hide");
+              document.querySelector("#btn-next").classList.add("hide");
+              document.querySelector("#btn-done").classList.remove("hide");
+              return;
+            }
+
+            //2-- load new word
+            word = slidesObj[currSlide];
+            wordObj = {};
+
+            for (let i = 0; i < word.length; i++) {
+              //
+              wordObj[i] = word[i];
+            }
+
+            //4-- empty output div
+            //5-- add new divs for letters...
+            loadSlide(currSlide, word);
+
+            //3-- hide next button (load slide)
+            document.querySelector("#btn-next").classList.remove("hide");
+            document.querySelector("#btn-next").classList.add("hide");
+            //2b -- clear the input
+            document.querySelector("#btn-audio").focus();
+            document.querySelector("#inp-1").value = "";
+            //6-reset is correct
+            correctObj.correct = false;
+          });
+
+        document
+          .querySelector("#btn-done")
+          .addEventListener("click", function (e) {
+            //go to main menu - DONE
+            document.querySelector("#slides-1").classList.remove("hide");
+            document.querySelector("#slides-1").classList.add("hide");
+            document.querySelector("#main-0").classList.remove("hide");
+            document.querySelector("#btn-done").classList.remove("hide");
+            document.querySelector("#btn-done").classList.add("hide");
+            document.querySelector("#inp-1").value = "";
+            correctObj.correct = false;
+            currSlide = 0;
+            word = "";
+            wordObj = {};
+            //reset everything, except store, completed...
+            //_____________
           });
       });
 
@@ -415,8 +568,53 @@
         return;
       }
 
-      //1-- add and remove right and wrong to output-box
-      //2-- make code useable for cellphone - DONE
+      function checkSentenceCorrect(correctObj, outputBoxId) {
+        // - for each div with letter class, check it has the correct class,
+        // //if yes, show the next button...(or if 80% of letters are correct)
+        let letterElems = document
+          .querySelector("#" + outputBoxId)
+          .querySelectorAll(".letter");
+
+        let letterCount = letterElems.length;
+        let count = 0;
+        let isCorrect = false;
+
+        for (let i = 0; i < letterElems.length; i++) {
+          //
+          isCorrect = letterElems[i].classList.contains("correct");
+          if (isCorrect) {
+            count++;
+          }
+        }
+        if (count / letterCount > 0.8) {
+          //
+          correctObj.correct = true;
+        }
+
+        return;
+      }
+
+      //Function - Load Slide
+      function loadSlide(slide, word) {
+        //
+
+        document.querySelector("#output-box").innerHTML = "";
+        let outputDiv = document.querySelector("#output-box");
+        for (let i = 0; i < word.length; i++) {
+          //
+
+          let letterDiv = document.createElement("div");
+          letterDiv.setAttribute("id", "ltr-" + i);
+
+          letterDiv.classList.add("letter");
+          //
+
+          outputDiv.appendChild(letterDiv);
+        }
+
+        return;
+      }
+
       //3-- have multiple questions...
     </script>
   </body>
