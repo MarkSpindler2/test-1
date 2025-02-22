@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Select 1</title>
+    <title>Select 3</title>
     <style>
       .all-box {
         display: flex;
@@ -13,6 +13,8 @@
         align-items: center;
         font-size: 18px;
         font-family: sans-serif;
+        /*width: 350px;*/
+        background-color: #fea;
       }
       .create-box {
         display: flex;
@@ -35,16 +37,19 @@
       }
       .sel-elem {
         margin: 0px 4px;
+        font-size: 18px;
+        text-align: center;
+      }
+      .para {
+        background-color: #ddf;
       }
       .wrong {
-        background-color: pink;
-        color: #d11;
-        outline: 2px solid #d11;
+        outline: 3px solid #d11;
+        border: 2px solid orange;
       }
       .correct {
-        background-color: lime;
-        color: #151;
-        outline: 2px solid #151;
+        outline: 3px solid #151;
+        border: 2px solid lime;
       }
 
       .hide {
@@ -54,35 +59,48 @@
   </head>
   <body>
     <div id="all-box" class="all-box">
-      <div class="create-box">
+      <div class="create-box hide">
         <h1>Sentences</h1>
         <p id="create-s-0_0">This is sentence 1.</p>
         <p id="create-s-0_1">This is sentence 2.</p>
       </div>
-      <div id="output-box" class="output-box">output</div>
+      <div id="output-box" class="output-box">output2</div>
       <button id="btn-check-1">Check</button>
     </div>
     <script>
       //1-- hard code div with paragraphs that have
       // -- sentences, separated with drop downs.
-      // -- if the answer is correct on submit, change class
-      //
+      // -- if the answer is correct on submit, change class - DONE
+      //2-- design for cellphone.. prototype
       const sentenceObj = {
         0: {
-          original: "This is sentence 50.",
-          choices: { 0: { start: 0, end: 5 } },
+          parts: {
+            0: { type: "text", start: 0, end: 8 },
+            1: { type: "sel", start: 8, end: 10 },
+            2: { type: "text", start: 10, end: 11 },
+            3: { type: "sel", start: 11, end: 16 },
+            4: { type: "text", start: 16, end: 24 },
+          },
+          original: "Welcome to class people.",
         },
         1: {
-          original: "This is sentence 70.",
-          choices: { 0: { start: 8, end: 15 }, 1: { start: 17, end: 19 } },
+          parts: {
+            0: { type: "sel", start: 0, end: 2 },
+            1: { type: "text", start: 2, end: 19 },
+          },
+          original: "My apologies to you.",
         },
       };
 
-      //hard coded
-      const correctChoiceList = { 0: "This " };
-      //
+      const allChoices = {
+        c_0_0: "to",
+        c_0_1: "class",
+        c_1_0: "My",
+      };
+
       document.addEventListener("DOMContentLoaded", function (e) {
         renderSentences(sentenceObj, "output-box");
+        console.log("Render completed.");
       });
 
       document
@@ -90,64 +108,122 @@
         .addEventListener("click", function (e) {
           //
           let isMatch = false;
-          //1-- get value chosen from select.
-          let choiceVal = document.querySelector("#sel-out-0").value;
 
-          //2-- see if it matches word
-          if (choiceVal == correctChoiceList[0]) {
-            isMatch = true;
-          } else {
-            isMatch = false;
+          //2-- loop through all Choices and check if correct...
+          let choiceKeys = Object.keys(allChoices);
+
+          for (let i = 0; i < choiceKeys.length; i++) {
+            //
+            //1-- get value chosen from select.
+            let key = choiceKeys[i];
+            if (document.querySelector("#" + key) == null) {
+              console.warn(
+                `key (${document.querySelector(
+                  "#" + key
+                )}) does not exist. btn-check-1 click event.`
+              );
+              return;
+            }
+            let choiceVal = document.querySelector("#" + key).value;
+
+            if (choiceVal == allChoices[key]) {
+              isMatch = true;
+            } else {
+              isMatch = false;
+            }
+            //3-- if not, add wrong class,
+            if (isMatch) {
+              //if matches, add correct class
+              document.querySelector("#" + key).classList.remove("wrong");
+              document.querySelector("#" + key).classList.remove("correct");
+              document.querySelector("#" + key).classList.add("correct");
+            } else {
+              //if not, add wrong class
+              document.querySelector("#" + key).classList.remove("correct");
+              document.querySelector("#" + key).classList.remove("wrong");
+              document.querySelector("#" + key).classList.add("wrong");
+            }
+            //4-- else, add the correct class
           }
-          //3-- if not, add wrong class,
-          if (isMatch) {
-            //if matches, add correct class
-            document.querySelector("#sel-out-0").classList.remove("wrong");
-            document.querySelector("#sel-out-0").classList.remove("correct");
-            document.querySelector("#sel-out-0").classList.add("correct");
-          } else {
-            //if not, add wrong class
-            document.querySelector("#sel-out-0").classList.remove("correct");
-            document.querySelector("#sel-out-0").classList.remove("wrong");
-            document.querySelector("#sel-out-0").classList.add("wrong");
-          }
-          //4-- else, add the correct class
         });
 
       //FUNCTIONs - function - add sentences with select and option to output box
       function renderSentences(sentenceObj, outputId) {
         //
-        // create it HARD CODED at first
         let outputElem = document.querySelector("#" + outputId);
-        let pElem = document.createElement("p");
-        pElem.setAttribute("id", "p-out-0");
-        pElem.classList.add("p-out-box");
 
-        outputElem.appendChild(pElem);
+        let paraKeys = Object.keys(sentenceObj);
+        console.log(sentenceObj);
 
-        //
-        let selEl = document.createElement("select");
-        selEl.setAttribute("id", "sel-out-0");
-        selEl.classList.add("sel-elem");
-        let opt1 = document.createElement("option");
-        opt1.value = "Option 1";
-        opt1.text = "Option 1";
-        selEl.add(opt1);
-        let opt2 = document.createElement("option");
+        for (let i = 0; i < paraKeys.length; i++) {
+          let selCount = 0; //this is per line....
+          // 1-- create paragraph
+          let para = document.createElement("p");
+          para.setAttribute("id", "p-" + paraKeys[i]);
+          para.classList.add("para");
 
-        let startIndex = sentenceObj[0]["choices"][0]["start"];
-        let endIndex = sentenceObj[0]["choices"][0]["end"];
-        let text2 = sentenceObj[0]["original"];
-        let optText = text2.slice(startIndex, endIndex);
-        opt2.value = optText;
-        opt2.text = optText;
-        selEl.add(opt2);
-        pElem.appendChild(selEl);
+          // append paragraph to output
+          outputElem.appendChild(para);
+          // 2 - create text nodes and selects and append them to the
+          // paragraph
+          let partKeys = Object.keys(sentenceObj[paraKeys[i]]["parts"]);
 
-        let extraText = text2.slice(endIndex);
+          for (let j = 0; j < partKeys.length; j++) {
+            //
+            let type = "text";
+            if (
+              sentenceObj[paraKeys[i]]["parts"][partKeys[j]]["type"] == "sel"
+            ) {
+              type = "sel";
+            }
 
-        pElem.appendChild(document.createTextNode(extraText));
+            //if type is text, create text node and append
+            //else create sel node and append
+            let start = sentenceObj[paraKeys[i]]["parts"][partKeys[j]]["start"];
+            let end = sentenceObj[paraKeys[i]]["parts"][partKeys[j]]["end"];
+
+            let val = "";
+            if (type == "text") {
+              val = String(sentenceObj[paraKeys[i]]["original"]).slice(
+                start,
+                end
+              );
+              para.appendChild(document.createTextNode(val));
+            } else {
+              let selElem = document.createElement("select");
+              selElem.setAttribute("id", "c_" + i + "_" + selCount);
+
+              //get all values from all Choices object
+              let values = Object.values(allChoices);
+              console.log(values);
+              let randomValues = shuffle(values);
+              console.log(randomValues);
+
+              for (let k = 0; k < values.length; k++) {
+                let opt1 = document.createElement("option");
+                // -- not yet randomized values
+                val = values[k];
+                opt1.value = val;
+                opt1.text = val;
+                selElem.add(opt1);
+              }
+
+              para.appendChild(selElem);
+              selCount++;
+            }
+          }
+        }
+
         return;
+      }
+
+      //FUNCTIONS - shuffle array
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
       }
     </script>
   </body>
