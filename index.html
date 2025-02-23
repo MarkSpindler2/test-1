@@ -75,27 +75,65 @@
       const sentenceObj = {
         0: {
           parts: {
-            0: { type: "text", start: 0, end: 8 },
-            1: { type: "sel", start: 8, end: 10 },
-            2: { type: "text", start: 10, end: 11 },
-            3: { type: "sel", start: 11, end: 16 },
-            4: { type: "text", start: 16, end: 24 },
+            0: { type: "text", start: 0, end: 28 },
+            1: { type: "sel", start: 28, end: 33 },
+            2: { type: "text", start: 33, end: 38 },
+            3: { type: "sel", start: 38, end: 47 },
+            4: { type: "text", start: 47, end: 68 },
           },
-          original: "Welcome to class people.",
+          original:
+            "Hello Tomas, how are you? I heard you graduated from driving school.",
         },
         1: {
           parts: {
-            0: { type: "sel", start: 0, end: 2 },
-            1: { type: "text", start: 2, end: 19 },
+            0: { type: "text", start: 0, end: 6 },
+            1: { type: "sel", start: 6, end: 10 },
+            2: { type: "text", start: 10, end: 39 },
+            3: { type: "sel", start: 39, end: 46 },
+            4: { type: "text", start: 46, end: 48 },
           },
-          original: "My apologies to you.",
+          original: "Is it true that you now have a class 2 license?",
+        },
+        2: {
+          parts: {
+            0: { type: "text", start: 0, end: 16 },
+            1: { type: "sel", start: 16, end: 23 },
+            2: { type: "text", start: 23, end: 61 },
+          },
+          original:
+            "I spoke to your brother yesterday and he told me the details.",
+        },
+        3: {
+          parts: {
+            0: { type: "text", start: 0, end: 14 },
+            1: { type: "sel", start: 14, end: 22 },
+            2: { type: "text", start: 22, end: 69 },
+            3: { type: "sel", start: 69, end: 73 },
+            4: { type: "text", start: 73, end: 89 },
+          },
+          original:
+            "Anyways, I am inviting you out to Boston Pizza. I hear they have the best pizza in town.",
+        },
+        4: {
+          parts: {
+            0: { type: "text", start: 0, end: 15 },
+            1: { type: "sel", start: 15, end: 19 },
+            2: { type: "text", start: 19, end: 79 },
+          },
+          original:
+            "Please, let me know if you are interested by Tuesday night. All the best, Eric",
         },
       };
 
       const allChoices = {
-        c_0_0: "to",
-        c_0_1: "class",
-        c_1_0: "My",
+        c_0_0: "heard",
+        c_0_1: "graduated",
+        c_1_0: "true",
+        c_1_1: "license",
+        c_2_0: "brother",
+        c_3_0: "inviting",
+        c_3_1: "best",
+        c_4_0: "know",
       };
 
       document.addEventListener("DOMContentLoaded", function (e) {
