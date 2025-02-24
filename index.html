@@ -355,7 +355,8 @@
               para.appendChild(document.createTextNode(val));
             } else {
               let selElem = document.createElement("select");
-              selElem.setAttribute("id", "c_" + i + "_" + selCount);
+              let selId = "c_" + i + "_" + selCount;
+              selElem.setAttribute("id", selId);
               selElem.classList.add("sel-elem");
 
               //get all values from all Choices object
@@ -364,10 +365,45 @@
               let randomValues = shuffle(values);
               console.log(randomValues);
 
-              for (let k = 0; k < values.length; k++) {
+              //DONE- create an array of 4 values where one of them is correct
+              //1--get correct answer -- selId
+              console.log(allChoices[selId]);
+              let newChoiceIdsArr = [];
+              newChoiceIdsArr.push(selId);
+              let choiceKeys = Object.keys(allChoices);
+              //2--randomly select up to 3 other answers, if there are 3 options.. up to
+              let count = 1;
+              while (count < choiceKeys.length && count < 4) {
+                let rand = Math.floor(Math.random() * choiceKeys.length);
+                console.log(`rand: (${rand}) - (${choiceKeys[rand]})`);
+                if (!newChoiceIdsArr.includes(choiceKeys[rand])) {
+                  newChoiceIdsArr.push(choiceKeys[rand]);
+                  count++;
+                }
+              }
+              console.log(newChoiceIdsArr);
+              //3-- mix them - TODO NEXT
+              //-- randomly do 7 swaps
+              for (let m = 0; m < 10; m++) {
+                //pick random index out of 4
+                let randA = Math.floor(Math.random() * 4);
+
+                //pick another random index out of 4, not the first one
+
+                let randC = Math.floor(Math.random() * 4);
+                console.log(`${randA} - ${randC}`);
+                if (randC != randA) {
+                  //do swap
+                  let tmpVal = newChoiceIdsArr[randA];
+                  newChoiceIdsArr[randA] = newChoiceIdsArr[randC];
+                  newChoiceIdsArr[randC] = tmpVal;
+                }
+              }
+
+              for (let k = 0; k < newChoiceIdsArr.length; k++) {
                 let opt1 = document.createElement("option");
                 // -- not yet randomized values
-                val = values[k];
+                val = allChoices[newChoiceIdsArr[k]];
                 opt1.value = val;
                 opt1.text = val;
                 selElem.add(opt1);
