@@ -43,6 +43,34 @@
       .para {
         background-color: #ddf;
       }
+      .btn {
+        padding: 4px;
+        margin: 2px;
+        font-size: 18px;
+        border-right: solid 2px black;
+        border-bottom: solid 2px black;
+        border-radius: 5px;
+      }
+      .inp {
+        text-align: center;
+        max-width: 80px;
+        font-size: 18px;
+      }
+      .inp:focus {
+        border-width: 3px;
+        border-color: black;
+      }
+      .btn:hover {
+        background-color: gold;
+      }
+      .btn:active {
+        border: solid 4px gold;
+        background-color: grey;
+        color: white;
+      }
+      .blue-border {
+        border: solid 2px blue;
+      }
       .wrong {
         outline: 3px solid #d11;
         border: 2px solid orange;
@@ -64,9 +92,48 @@
         <p id="create-s-0_0">This is sentence 1.</p>
         <p id="create-s-0_1">This is sentence 2.</p>
       </div>
-      <div id="output-box" class="output-box">output2</div>
-      <button id="btn-check-1">Check</button>
+      <div id="output-box" class="output-box"><h2>Missing Word</h2></div>
+      <button id="btn-check-1" class="btn">Check</button>
+
+      <!--next div-->
+      <div id="all-box-2" class="blue-border">
+        <h2>Type 'true' or 'false'.</h2>
+        <ol>
+          <li>
+            Tomas is writing the message. <br /><input id="i_0_0" class="inp" />
+          </li>
+          <li>
+            Tomas now has a class 1 license. <br /><input
+              id="i_1_0"
+              class="inp"
+            />
+          </li>
+          <li>
+            Eric spoke to Tomas's sister. <br /><input id="i_2_0" class="inp" />
+          </li>
+          <li>
+            Tomas wants to meet at Tim Horton's. <br /><input
+              id="i_3_0"
+              class="inp"
+            />
+          </li>
+          <li>
+            Boston Pizza sells pizza. <br /><input id="i_4_0" class="inp" />
+          </li>
+          <li>
+            The deadline is Tuesday. <br /><input id="i_5_0" class="inp" />
+          </li>
+          <li>
+            The deadline is in the afternoon. <br /><input
+              id="i_6_0"
+              class="inp"
+            />
+          </li>
+        </ol>
+      </div>
+      <button id="btn-check-2" class="btn">Check</button>
     </div>
+
     <script>
       //1-- hard code div with paragraphs that have
       // -- sentences, separated with drop downs.
@@ -136,6 +203,17 @@
         c_4_0: "know",
       };
 
+      //TODO, put new id button to check true and fals o in the section
+      const shortAnswers = {
+        i_0_0: "false",
+        i_1_0: "false",
+        i_2_0: "false",
+        i_3_0: "false",
+        i_4_0: "true",
+        i_5_0: "true",
+        i_6_0: "false",
+      };
+
       document.addEventListener("DOMContentLoaded", function (e) {
         renderSentences(sentenceObj, "output-box");
         console.log("Render completed.");
@@ -185,6 +263,54 @@
           }
         });
 
+      //check true or false
+      document
+        .querySelector("#btn-check-2")
+        .addEventListener("click", function (e) {
+          //==++
+          let isMatch = false;
+
+          //2-- loop through all Choices and check if correct...
+          let shortKeys = Object.keys(shortAnswers);
+
+          for (let i = 0; i < shortKeys.length; i++) {
+            //
+            //1-- get value chosen from select.
+            let key = shortKeys[i];
+            if (document.querySelector("#" + key) == null) {
+              console.warn(
+                `key (${document.querySelector(
+                  "#" + key
+                )}) does not exist. btn-check-1 click event.`
+              );
+              return;
+            }
+            let shortVal = document.querySelector("#" + key).value;
+            //convert answers to all lowercase...
+            shortVal = shortVal.toLowerCase();
+
+            if (shortVal == shortAnswers[key]) {
+              isMatch = true;
+            } else {
+              isMatch = false;
+            }
+            //3-- if not, add wrong class,
+            if (isMatch) {
+              //if matches, add correct class
+              document.querySelector("#" + key).classList.remove("wrong");
+              document.querySelector("#" + key).classList.remove("correct");
+              document.querySelector("#" + key).classList.add("correct");
+            } else {
+              //if not, add wrong class
+              document.querySelector("#" + key).classList.remove("correct");
+              document.querySelector("#" + key).classList.remove("wrong");
+              document.querySelector("#" + key).classList.add("wrong");
+            }
+            //4-- else, add the correct class
+          }
+          //==++
+        });
+
       //FUNCTIONs - function - add sentences with select and option to output box
       function renderSentences(sentenceObj, outputId) {
         //
@@ -230,6 +356,7 @@
             } else {
               let selElem = document.createElement("select");
               selElem.setAttribute("id", "c_" + i + "_" + selCount);
+              selElem.classList.add("sel-elem");
 
               //get all values from all Choices object
               let values = Object.values(allChoices);
